@@ -1,1 +1,3 @@
 influxdb/data
+mosquitto/config/passwd
+mosquitto/data
