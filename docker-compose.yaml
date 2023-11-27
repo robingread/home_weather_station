@@ -29,3 +29,9 @@ services:
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./mosquitto/config/passwd:/mosquitto/config/passwd:rw
+
+  trigger:
+    build: python-apps
+    command: python trigger.py
+    volumes:
+      - ./python-apps/src:/app:ro
