@@ -11,3 +11,13 @@ services:
     volumes:
       - ./influxdb/data:/var/lib/influxdb2:rw
       - ./influxdb/config/config.yaml:/etc/influxdb2/config.yaml:ro
+
+  grafana:
+    image: grafana/grafana
+    user: "1000:1000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/data:/var/lib/grafana:rw
+    depends_on:
+      - influxdb
