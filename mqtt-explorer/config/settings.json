@@ -1,0 +1,75 @@
+{
+  "ConnectionManager_connections": {
+    "mqtt.eclipse.org": {
+      "configVersion": 1,
+      "certValidation": true,
+      "clientId": "mqtt-explorer-e835a673",
+      "id": "mqtt.eclipse.org",
+      "name": "mqtt.eclipse.org",
+      "encryption": false,
+      "subscriptions": [
+        {
+          "topic": "#",
+          "qos": 0
+        },
+        {
+          "topic": "$SYS/#",
+          "qos": 0
+        }
+      ],
+      "type": "mqtt",
+      "host": "mqtt.eclipse.org",
+      "port": 1883,
+      "protocol": "mqtt"
+    },
+    "test.mosquitto.org": {
+      "configVersion": 1,
+      "certValidation": true,
+      "clientId": "mqtt-explorer-fc9c0318",
+      "id": "test.mosquitto.org",
+      "name": "test.mosquitto.org",
+      "encryption": false,
+      "subscriptions": [
+        {
+          "topic": "#",
+          "qos": 0
+        },
+        {
+          "topic": "$SYS/#",
+          "qos": 0
+        }
+      ],
+      "type": "mqtt",
+      "host": "test.mosquitto.org",
+      "port": 1883,
+      "protocol": "mqtt"
+    },
+    "home-mqtt-network": {
+      "configVersion": 1,
+      "certValidation": true,
+      "clientId": "mqtt-explorer-ec9c0318",
+      "id": "home-mqtt-network",
+      "name": "Home MQTT Network",
+      "encryption": false,
+      "subscriptions": [
+        {
+          "topic": "#",
+          "qos": 0
+        },
+        {
+          "topic": "$SYS/#",
+          "qos": 0
+        }
+      ],
+      "type": "mqtt",
+      "host": "mqtt-broker",
+      "port": 1883,
+      "protocol": "mqtt"
+    }
+  },
+  "connection_view_state": {
+    "home-mqtt-network": {
+      "charts": []
+    }
+  }
+}
