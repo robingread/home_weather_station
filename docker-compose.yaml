@@ -53,6 +53,8 @@ services:
       - 4000:4000
     volumes:
       - ./mqtt-explorer/config:/mqtt-explorer/config:rw
+    depends_on:
+      - mqtt-broker
 
   trigger:
     build: python-apps
