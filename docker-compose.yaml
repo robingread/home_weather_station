@@ -57,6 +57,8 @@ services:
   trigger:
     build: python-apps
     command: python trigger.py
+    env_file:
+      - .env
     volumes:
       - ./python-apps/src:/app:ro
 
