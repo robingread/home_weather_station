@@ -59,3 +59,11 @@ services:
     command: python trigger.py
     volumes:
       - ./python-apps/src:/app:ro
+
+  pseudo-mqtt-sensor:
+    build: python-apps
+    command: python pseudo-sensor.py
+    env_file:
+      - .env
+    volumes:
+      - ./python-apps/src:/app:ro
