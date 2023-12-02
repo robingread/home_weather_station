@@ -34,11 +34,10 @@ def main() -> None:
 
     publish_func = functools.partial(publish_trigger, client)
     print("Starting trigger...", flush=True)
-    # Schedule four times an hour at 15-minute intervals starting at the top of the hour
-    schedule.every().hour.at(":00").do(publish_trigger)
-    schedule.every().hour.at(":15").do(publish_trigger)
-    schedule.every().hour.at(":30").do(publish_trigger)
-    schedule.every().hour.at(":45").do(publish_trigger)
+    schedule.every().hour.at(":00").do(publish_func)
+    schedule.every().hour.at(":15").do(publish_func)
+    schedule.every().hour.at(":30").do(publish_func)
+    schedule.every().hour.at(":45").do(publish_func)
     print(schedule.jobs, flush=True)
 
     while True:
