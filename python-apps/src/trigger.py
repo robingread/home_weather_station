@@ -19,7 +19,7 @@ USERNAME = os.getenv("MQTT_USERNAME")
 PASSWORD = os.getenv("MQTT_PASSWORD")
 
 
-def publish_trigger(client: mqtt.Client) -> None:
+def publish_trigger() -> None:
     """Publish the trigger signal to the MQTT network."""
     print("Publishing trigger...", flush=True)
     client = mqtt.Client(client_id="trigger")
@@ -31,7 +31,7 @@ def publish_trigger(client: mqtt.Client) -> None:
 
 def main() -> None:
     """Main function to setup the scheduler."""
-    job = functools.partial(publish_trigger, None)
+    job = functools.partial(publish_trigger)
 
     print("Starting trigger...", flush=True)
     schedule.every().hour.at(":00").do(job)
