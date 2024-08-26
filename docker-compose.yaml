@@ -72,6 +72,13 @@ services:
     volumes:
       - ./python-apps/src:/app:ro
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "trigger.logs"
+    depends_on:
+      - fluentd
 
   pseudo-mqtt-sensor:
     build: python-apps
@@ -81,6 +88,21 @@ services:
     volumes:
       - ./python-apps/src:/app:ro
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "trigger.logs"
+    depends_on:
+      - fluentd
+
+  fluentd:
+    build: fluentd
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./fluentd/config:/fluentd/etc:ro
 
   node-exporter:
     image: prom/node-exporter:latest
