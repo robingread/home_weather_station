@@ -101,6 +101,16 @@ services:
       - "24224:24224/udp"
     volumes:
       - ./fluentd/config:/fluentd/etc:ro
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/config.yaml:/etc/loki/local-config.yaml:ro
 
   node-exporter:
     image: prom/node-exporter:latest
