@@ -22,7 +22,10 @@ PASSWORD = os.getenv("MQTT_PASSWORD")
 def publish_trigger() -> None:
     """Publish the trigger signal to the MQTT network."""
     print("Publishing trigger...", flush=True)
-    client = mqtt.Client(client_id="trigger")
+    client = mqtt.Client(
+        client_id="trigger",
+        callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
+    )
     client.username_pw_set(username=USERNAME, password=PASSWORD)
     client.connect(host=HOST, port=PORT, keepalive=60)
     client.publish(topic=TRIGGER_TOPIC, payload=str(True))
