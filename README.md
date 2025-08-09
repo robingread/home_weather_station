@@ -1,88 +1,98 @@
 # Readme
 
+| Service | Description | Web Interface |
+|---|---|---|
+| InfluxDB | ??? | [`localhost:8086`](http://localhost:8086) |
+| Grafana | ??? | [`localhost:3001`](http://localhost:3001) |
+| MQTT Inspector | ??? | [`localhost:3002`](http://localhost:3002) |
+| Prometheus | ??? | [`localhost:3003`](http://localhost:3003) |
+
 ## Setup Steps
+
+### Setup the `.env` file
+
+Create a new `.env` file using the `.env.example`:
+
+```bash
+cp .env.example .env
+```
 
 ### Setup InfluxDB
 
-- create `.env` file
-- setup influxdb by going to the web UI, adding a username/password, org and bucket
-- Add InfluxDB API token to the `.env` file.
-
-### Setup Mosquitto
-
-- create `mosquitto/config/passwd` file
-- start mqtt-broker service
-- execute password setup (see below)
-
-### Setup Grafana
-
-- connect to web UI (e.g., <http://localhost:3000>), login with admin/admin
-- change password
-- change username
-
-## InfluxDB
-
-Pull the latest [InfluxDB Docker](https://hub.docker.com/_/influxdb) image:
+Start up the `influxdb` service:
 
 ```bash
-docker pull influxdb:2.7
+docker compose up influxdb
 ```
 
-```bash
-docker run --rm influxdb:2.7. influxd print-config > config.yaml
-```
+Then open the Web interface at [`localhost:8086`](http://localhost:8086) to create a user and password. Set the Organization to `Home` and the Bucket to `Test Measurements`. When that is done, there will be an access token displayed. This needs to be assigned to the `INFLUXDB_TOKEN` in the `.env` file. You can then stop the docker service.
 
-```bash
-docker run --name influxdb -d \
--p 8086:8086 \
---volume `pwd`/influxdb2:/var/lib/influxdb2 \
---volume `pwd`/config.yaml:/etc/influxdb2/config.yaml \
-influxdb:2.7
-```
+### Setup Mosquitto MQTT
 
-## Mosquito Setup
-
-Create a password file (`mqtt_config/passwd`) and mounting it in the container, and run the following to add a password for a given user:
+First, create a password file:
 
 ```bash
 touch mosquitto/config/passwd
 sudo chmod 0700 mosquitto/config/passwd
 ```
 
+Then start the `mqtt-broker` service:
+
+```bash
+docker compose up mqtt-broker
+```
+
+To set the username and password, run the following in a separate terminal:
+
 ```bash
 docker exec -it <container_name> mosquitto_passwd -c /mosquitto/config/passwd <username>
 ```
 
+Assign the username and password credentials to the `.env` file in the `MQTT_USERNAME` and `MQTT_PASSWORD` variables.
+
+Finally, follow the instruction to change the ownership of the password file:
+
 ```bash
-chown root mosquitto/config/passwd
-``````
+sudo chown root mosquitto/config/passwd
+```
 
-## `.env` File
+You can then stop the docker service.
 
-The following variables should be set in a `.env` file:
+### Setup Grafana
 
-| Name | Description |
-|--|--|
-| `INFLUXDB_HOST` | Hostname of the InfluxDB service.
-| `INFLUXDB_PORT` | Port to connect to for the InfluxDB database.
-| `INFLUXDB_TOKEN` | Access token for the InfluxDB database.
+Then start the `grafana` service:
 
-## Speed up SSH Access to the Pi over WiFi
+```bash
+docker compose up grafana
+```
+
+You can then connect to web UI (e.g., <http://localhost:3001>), login with `admin`/`admin`. You will then be prompted to update the password for the `admin` user.
+
+You can then stop the service.
+
+## Setup for running on a Raspberry PI
+
+### Speed up SSH Access to the Pi over WiFi
 
 ```bash
 sudo pico /etc/ssh/sshd_config
+```
 
-# Add this line
+Then add this line:
+
+```
 IPQoS 0x00
 ```
 
-## Docker Images
+## References
 
-[Eclipse Mosquito MQTT Broker](https://hub.docker.com/_/eclipse-mosquitto)
-[InfluxDB Database](https://hub.docker.com/_/influxdb)
-[Grafana Visualisation](https://hub.docker.com/r/grafana/grafana)
+### Docker Images
 
-## Useful links
+- [Eclipse Mosquito MQTT Broker](https://hub.docker.com/_/eclipse-mosquitto)
+- [InfluxDB Database](https://hub.docker.com/_/influxdb)
+- [Grafana Visualisation](https://hub.docker.com/r/grafana/grafana)
+
+### Useful links
 
 Some bullshit to setup the Grafana connection, but this issue outlines it very well: <https://github.com/grafana/grafana/issues/32252>
 Increasing SWAP memory on a Raspberry Pi: <https://pimylifeup.com/raspberry-pi-swap-file/>
