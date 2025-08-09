@@ -13,11 +13,11 @@ services:
 
   grafana:
     image: grafana/grafana
-    user: "1000:1000"
+    user: ${USER_UID}:1000
     environment:
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
     ports:
-      - "3000:3000"
+      - ${GRAFANA_UI_PORT}:3000
     volumes:
       - ./grafana/config:/etc/grafana/provisioning/datasources:ro
       - ./grafana/data:/var/lib/grafana:rw
@@ -55,7 +55,7 @@ services:
     image: smeagolworms4/mqtt-explorer
     user: "1000:1000"
     ports:
-      - 4000:4000
+      - ${MQTT_EXPLORER_UI_PORT}:4000
     volumes:
       - ./mqtt-explorer/config:/mqtt-explorer/config:rw
     depends_on:
@@ -133,4 +133,4 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
     ports:
-      - 9090:9090
+      - ${PROMETHEUS_UI_PORT}:9090
