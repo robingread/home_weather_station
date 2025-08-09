@@ -23,6 +23,7 @@ services:
       - ./grafana/data:/var/lib/grafana:rw
     depends_on:
       - influxdb
+      - loki
     restart: unless-stopped
 
   mqtt-broker:
@@ -76,6 +77,7 @@ services:
         fluentd-address: "localhost:24224"
         tag: "trigger.logs"
     depends_on:
+      - mqtt-broker
       - fluentd
 
   pseudo-mqtt-sensor:
@@ -92,7 +94,9 @@ services:
         fluentd-address: "localhost:24224"
         tag: "trigger.logs"
     depends_on:
+      - mqtt-broker
       - fluentd
+      - trigger
 
   fluentd:
     build: fluentd
