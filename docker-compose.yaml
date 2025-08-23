@@ -10,6 +10,11 @@ services:
       - ./influxdb/data:/var/lib/influxdb2:rw
       - ./influxdb/config/config.yaml:/etc/influxdb2/config.yaml:ro
     restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   grafana:
     image: grafana/grafana
@@ -25,6 +30,11 @@ services:
       - influxdb
       - loki
     restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   mqtt-broker:
     image: eclipse-mosquitto:2
@@ -34,6 +44,11 @@ services:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./mosquitto/config/passwd:/mosquitto/config/passwd:rw
     restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   telegraf:
     image: telegraf:latest
@@ -51,10 +66,15 @@ services:
       - influxdb
       - mqtt-broker
     restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   mqtt-explorer:
     image: smeagolworms4/mqtt-explorer
-    user: "1000:1000"
+    user: ${USER_UID}:1000
     ports:
       - ${MQTT_EXPLORER_UI_PORT}:4000
     volumes:
@@ -62,6 +82,11 @@ services:
     depends_on:
       - mqtt-broker
     restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   trigger:
     build: python-apps
@@ -70,15 +95,14 @@ services:
       - .env
     volumes:
       - ./python-apps/src:/app:ro
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:24224"
-        tag: "trigger.logs"
     depends_on:
       - mqtt-broker
-      - fluentd
+    restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   pseudo-mqtt-sensor:
     build: python-apps
@@ -87,26 +111,32 @@ services:
       - .env
     volumes:
       - ./python-apps/src:/app:ro
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:24224"
-        tag: "trigger.logs"
     depends_on:
       - mqtt-broker
-      - fluentd
       - trigger
+    restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
-  fluentd:
-    build: fluentd
-    ports:
-      - "24224:24224"
-      - "24224:24224/udp"
+  promtail:
+    image: grafana/promtail:2.8.2
     volumes:
-      - ./fluentd/config:/fluentd/etc:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
+      - ./promtail/config.yaml:/etc/promtail/config.yaml:ro
+    command: -config.file=/etc/promtail/config.yaml
+    restart: unless-stopped
     depends_on:
       - loki
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   loki:
     image: grafana/loki:latest
@@ -115,11 +145,16 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./loki/config.yaml:/etc/loki/local-config.yaml:ro
+    restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
-    restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -131,11 +166,16 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
       - 9100:9100
+    restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    restart: unless-stopped
     user: root
     volumes:
       - ./prometheus/config/config.yaml:/etc/prometheus/prometheus.yml:ro
@@ -148,3 +188,9 @@ services:
       - '--web.enable-lifecycle'
     ports:
       - ${PROMETHEUS_UI_PORT}:9090
+    restart: unless-stopped
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
