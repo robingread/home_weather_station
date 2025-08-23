@@ -1,5 +1,14 @@
+x-base-service: &base-service
+  restart: unless-stopped
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
 services:
   influxdb:
+    <<: *base-service
     image: influxdb
     ports:
       - "8086:8086"
@@ -9,14 +18,9 @@ services:
     volumes:
       - ./influxdb/data:/var/lib/influxdb2:rw
       - ./influxdb/config/config.yaml:/etc/influxdb2/config.yaml:ro
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   grafana:
+    <<: *base-service
     image: grafana/grafana
     user: ${USER_UID}:1000
     environment:
@@ -26,32 +30,22 @@ services:
     volumes:
       - ./grafana/config:/etc/grafana/provisioning/datasources:ro
       - ./grafana/data:/var/lib/grafana:rw
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:rw
     depends_on:
       - influxdb
       - loki
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   mqtt-broker:
+    <<: *base-service
     image: eclipse-mosquitto:2
     ports:
       - "1883:1883"
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./mosquitto/config/passwd:/mosquitto/config/passwd:rw
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   telegraf:
+    <<: *base-service
     image: telegraf:latest
     environment:
       - INFLUXDB_HOST=${INFLUXDB_HOST}
@@ -66,14 +60,9 @@ services:
     depends_on:
       - influxdb
       - mqtt-broker
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   mqtt-explorer:
+    <<: *base-service
     image: smeagolworms4/mqtt-explorer
     user: ${USER_UID}:1000
     ports:
@@ -82,14 +71,9 @@ services:
       - ./mqtt-explorer/config:/mqtt-explorer/config:rw
     depends_on:
       - mqtt-broker
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   trigger:
+    <<: *base-service
     build: python-apps
     command: python trigger.py
     env_file:
@@ -98,14 +82,9 @@ services:
       - ./python-apps/src:/app:ro
     depends_on:
       - mqtt-broker
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   pseudo-mqtt-sensor:
+    <<: *base-service
     build: python-apps
     command: python pseudo-sensor.py
     env_file:
@@ -115,14 +94,9 @@ services:
     depends_on:
       - mqtt-broker
       - trigger
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   promtail:
+    <<: *base-service
     image: grafana/promtail:2.8.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -130,30 +104,20 @@ services:
       - /var/log:/var/log:ro
       - ./promtail/config.yaml:/etc/promtail/config.yaml:ro
     command: -config.file=/etc/promtail/config.yaml
-    restart: unless-stopped
     depends_on:
       - loki
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   loki:
+    <<: *base-service
     image: grafana/loki:latest
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./loki/config.yaml:/etc/loki/local-config.yaml:ro
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   node-exporter:
+    <<: *base-service
     image: prom/node-exporter:latest
     container_name: node-exporter
     volumes:
@@ -167,14 +131,9 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
       - 9100:9100
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
 
   prometheus:
+    <<: *base-service
     image: prom/prometheus:latest
     container_name: prometheus
     user: root
@@ -189,9 +148,3 @@ services:
       - '--web.enable-lifecycle'
     ports:
       - ${PROMETHEUS_UI_PORT}:9090
-    restart: unless-stopped
-    logging:
-        driver: "json-file"
-        options:
-          max-size: "10m"
-          max-file: "3"
