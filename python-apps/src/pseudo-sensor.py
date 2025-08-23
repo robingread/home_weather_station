@@ -1,9 +1,20 @@
 import json
 import os
 import random
+import sys
 
+import logging
 import paho.mqtt.client as mqtt
 
+# Set up the logger
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(stream=sys.stdout)],
+)
+LOGGER = logging.getLogger("pseudo-sensor")
+
+# Setup MQTT Variables
 TRIGGER_TOPIC = "sensors/trigger"
 TOPIC = "sensors/temp"
 SENSOR_ID = "pseudo-sensor"
@@ -14,15 +25,16 @@ PASSWORD = os.getenv("MQTT_PASSWORD")
 
 
 def on_connect(client, userdata, flags, rc, props) -> None:
-    print("Connected with result code " + str(rc), flush=True)
+    LOGGER.info("Connected with result code: %s", str(rc))
     if rc != 0:
         return
-    print(f"Subscribing to topic: {TRIGGER_TOPIC}")
+    LOGGER.info("Subscribing to topic: %s", TRIGGER_TOPIC)
     client.subscribe(TRIGGER_TOPIC)
 
 
 def on_message(client, userdata, msg) -> None:
-    print(msg.topic + " " + str(msg.payload.decode()), flush=True)
+    topic = msg.topic
+    LOGGER.info("Received trigger signal. Topic: %s", topic)
 
     temp = random.uniform(10.0, 40.0)
     humidity = random.uniform(10.0, 40.0)
@@ -39,11 +51,11 @@ def on_message(client, userdata, msg) -> None:
 
     payload = json.dumps(data)
     client.publish(topic=TOPIC, payload=payload)
-    print(f"Publishing reading: {payload}", flush=True)
+    LOGGER.info("Published reading: %s", payload)
 
 
-if __name__ == "__main__":
-    # TODO: Optionally, pass the sensor name as an argument to this script
+def main() -> None:
+    """Main function to setup the pseudo sensor"""
     client = mqtt.Client(
         client_id="pseudo-mqtt-sensor",
         callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
@@ -53,3 +65,7 @@ if __name__ == "__main__":
     client.username_pw_set(username=USERNAME, password=PASSWORD)
     client.connect(host=HOST, port=PORT, keepalive=60)
     client.loop_forever()
+
+
+if __name__ == "__main__":
+    main()
