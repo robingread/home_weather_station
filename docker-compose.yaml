@@ -154,3 +154,9 @@ services:
       - 80:80
     volumes:
       - ./nginx-proxy/config.conf:/etc/nginx/nginx.conf:ro
+
+  dozzle:
+    <<: *base-service
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
