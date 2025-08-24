@@ -146,3 +146,11 @@ services:
       - '--web.enable-lifecycle'
     ports:
       - ${PROMETHEUS_UI_PORT}:9090
+
+  nginx-proxy:
+    <<: *base-service
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx-proxy/config.conf:/etc/nginx/nginx.conf:ro
