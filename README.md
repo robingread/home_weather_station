@@ -1,5 +1,7 @@
 # Readme
 
+This project provides a Docker based container stack that can be used for ingesting and storing data gathered from my homemade [MQTT Temperature Sensors](https://github.com/robingread/esp32-bme280-mqtt-iot-sensor) project. The intension is for this to be part of my Home Lab running on a Raspberry Pi, but will likey grow in scope over time.
+
 | Service | Description | Web Interface |
 |---|---|---|
 | Dozzle | Quick inspection of container logs running on the Docker daemon. | [`doozle.localhost`](http://dozzle.localhost) |
