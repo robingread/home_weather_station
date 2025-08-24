@@ -2,10 +2,10 @@
 
 | Service | Description | Web Interface |
 |---|---|---|
-| InfluxDB | ??? | [`localhost:8086`](http://localhost:8086) |
-| Grafana | ??? | [`localhost:3001`](http://localhost:3001) |
-| MQTT Inspector | ??? | [`localhost:3002`](http://localhost:3002) |
-| Prometheus | ??? | [`localhost:3003`](http://localhost:3003) |
+| Dozzle | Quick inspection of container logs running on the Docker daemon. | [`doozle.localhost`](http://dozzle.localhost) |
+| InfluxDB | ??? | [`influxdb.localhost`](http://influxdb.localhost) |
+| Grafana | ??? | [`grafana.localhost`](http://grafana.localhost) |
+| MQTT Inspector | ??? | [`mqtt.localhost`](http://mqtt.localhost) |
 
 ## Setup Steps
 
@@ -25,7 +25,7 @@ Start up the `influxdb` service:
 docker compose up influxdb
 ```
 
-Then open the Web interface at [`localhost:8086`](http://localhost:8086) to create a user and password. Set the Organization to `Home` and the Bucket to `Test Measurements`. When that is done, there will be an access token displayed. This needs to be assigned to the `INFLUXDB_TOKEN` in the `.env` file. You can then stop the docker service.
+Then open the Web interface at [`grafana.localhost`](http://grafana.localhost) to create a user and password. Set the Organization to `Home` and the Bucket to `Test Measurements`. When that is done, there will be an access token displayed. This needs to be assigned to the `INFLUXDB_TOKEN` in the `.env` file. You can then stop the docker service.
 
 ### Setup Mosquitto MQTT
 
@@ -66,7 +66,7 @@ Then start the `grafana` service:
 docker compose up grafana
 ```
 
-You can then connect to web UI (e.g., <http://localhost:3001>), login with `admin`/`admin`. You will then be prompted to update the password for the `admin` user.
+You can then connect to web UI (e.g., <http://grafana.localhost>), login with `admin`/`admin`. You will then be prompted to update the password for the `admin` user.
 
 You can then stop the service.
 
