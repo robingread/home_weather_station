@@ -101,13 +101,6 @@ services:
     depends_on:
       - loki
 
-  loki:
-    <<: *base-service
-    image: grafana/loki:latest
-    command: -config.file=/etc/loki/local-config.yaml
-    volumes:
-      - ./loki/config.yaml:/etc/loki/local-config.yaml:ro
-
   node-exporter:
     <<: *base-service
     image: prom/node-exporter:latest
