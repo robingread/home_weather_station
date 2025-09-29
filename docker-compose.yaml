@@ -1,15 +1,7 @@
-x-base-service: &base-service
-  restart: unless-stopped
-  logging:
-    driver: "json-file"
-    options:
-      max-size: "10m"
-      max-file: "3"
-
 services:
   influxdb:
-    <<: *base-service
     image: influxdb
+    restart: unless-stopped
     ports:
       - "8086:8086"
     environment:
@@ -20,8 +12,8 @@ services:
       - ./influxdb/config/config.yaml:/etc/influxdb2/config.yaml:ro
 
   grafana:
-    <<: *base-service
     image: grafana/grafana
+    restart: unless-stopped
     user: ${USER_UID}:1000
     environment:
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
@@ -31,18 +23,17 @@ services:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:rw
     depends_on:
       - influxdb
-      - loki
 
   mqtt-broker:
-    <<: *base-service
     image: eclipse-mosquitto:2
+    restart: unless-stopped
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ./mosquitto/config/passwd:/mosquitto/config/passwd:rw
 
   telegraf:
-    <<: *base-service
     image: telegraf:latest
+    restart: unless-stopped
     environment:
       - INFLUXDB_HOST=${INFLUXDB_HOST}
       - INFLUXDB_PORT=${INFLUXDB_PORT}
@@ -58,8 +49,8 @@ services:
       - mqtt-broker
 
   mqtt-explorer:
-    <<: *base-service
     image: smeagolworms4/mqtt-explorer
+    restart: unless-stopped
     user: ${USER_UID}:1000
     volumes:
       - ./mqtt-explorer/config:/mqtt-explorer/config:rw
@@ -67,9 +58,9 @@ services:
       - mqtt-broker
 
   trigger:
-    <<: *base-service
     build: python-apps
     command: python trigger.py
+    restart: unless-stopped
     env_file:
       - .env
     volumes:
@@ -78,9 +69,9 @@ services:
       - mqtt-broker
 
   pseudo-mqtt-sensor:
-    <<: *base-service
     build: python-apps
     command: python pseudo-sensor.py
+    restart: unless-stopped
     env_file:
       - .env
     volumes:
@@ -90,8 +81,8 @@ services:
       - trigger
 
   node-exporter:
-    <<: *base-service
     image: prom/node-exporter:latest
+    restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -103,8 +94,8 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
 
   prometheus:
-    <<: *base-service
     image: prom/prometheus:latest
+    restart: unless-stopped
     user: root
     volumes:
       - ./prometheus/config/config.yaml:/etc/prometheus/prometheus.yml:ro
@@ -117,8 +108,8 @@ services:
       - '--web.enable-lifecycle'
 
   nginx-proxy:
-    <<: *base-service
     image: nginx:latest
+    restart: unless-stopped
     ports:
       - 80:80
     volumes:
