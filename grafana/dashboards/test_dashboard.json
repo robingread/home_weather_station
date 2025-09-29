@@ -24,63 +24,6 @@
   "panels": [
     {
       "datasource": {
-        "type": "loki",
-        "uid": "P8E80F9AEF21F6940"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 19,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "dedupStrategy": "none",
-        "enableInfiniteScrolling": false,
-        "enableLogDetails": true,
-        "prettifyLogMessage": true,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": true,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
-      },
-      "pluginVersion": "12.2.0-16818804881",
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "P8E80F9AEF21F6940"
-          },
-          "direction": "backward",
-          "editorMode": "builder",
-          "expr": "{service_name=\"home_weather_station-pseudo-mqtt-sensor-1\"} | logfmt",
-          "key": "Q-9ed8f732-a3fa-47fd-bba3-b4838037d008-0",
-          "queryType": "range",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "P8E80F9AEF21F6940"
-          },
-          "direction": "backward",
-          "editorMode": "builder",
-          "expr": "{service_name=\"home_weather_station-trigger-1\"} |= ``",
-          "hide": false,
-          "queryType": "range",
-          "refId": "B"
-        }
-      ],
-      "title": "Logs",
-      "type": "logs"
-    },
-    {
-      "datasource": {
         "type": "influxdb",
         "uid": "P951FEA4DE68E13C5"
       },
@@ -146,7 +89,7 @@
         "h": 17,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 0
       },
       "id": 1,
       "options": {
@@ -162,7 +105,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.2.0-16818804881",
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -236,7 +179,7 @@
           "tags": []
         }
       ],
-      "title": "New Panel",
+      "title": "Temperature Readings",
       "type": "timeseries"
     }
   ],
@@ -254,5 +197,5 @@
   "timezone": "browser",
   "title": "Test Dashbaord",
   "uid": "ea4f78c6-af93-4147-85f1-677e9208ac67",
-  "version": 9
+  "version": 10
 }
